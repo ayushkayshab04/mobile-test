@@ -22,7 +22,7 @@ const Layout = () => {
       tabBarInactiveTintColor:Colors.grey
     }}>
       <Tabs.Screen
-      name='home'
+      name='index'
       options={{
         tabBarIcon:({color})=>(
           <Feather name="home" size={26} color={color} />
