@@ -7,7 +7,7 @@ export const GlobalStyles = StyleSheet.create({
       // font-family: Inter;
       fontSize: 32,
       fontWeight: '700',
-      color: '#000',
+      color: '#2F2E41',
     },
     logoTextBlue: {},
     subHeadingLogin16: {
