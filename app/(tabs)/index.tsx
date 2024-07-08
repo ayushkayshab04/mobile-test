@@ -1,16 +1,18 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image, SafeAreaView, Modal } from 'react-native'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Entypo } from '@expo/vector-icons';
 import { Stack } from 'expo-router'
 import Colors from '@/constants/Colors';
 import { assetUrl, screenHeight, screenWidth } from '@/constants/metrics';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { GlobalStyles } from '@/constants/globalFonts';
-import { Event } from '@/constants/Interfaces';
 import { eventData } from '@/constants/data';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Dollar, More } from '@/assets/icons/GenricIcons';
+import { Calender, Dollar, Location, More, Ticket } from '@/assets/icons/GenricIcons';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { selectShowScanner } from '@/constants/store/selector';
+import IntroPopup from '@/components/IntroPopup/IntroPopup';
 
 
 
@@ -28,7 +30,7 @@ const ListCard = ({ data, setShowEvent, setEvent }: any) => {
         <Text style={[GlobalStyles.SubHeadingSmall14, { color: Colors.grey }]}>{data.location}</Text>
       </View>
       <View>
-        <Text style={[GlobalStyles.subHeadingLogin16, { color: 'black', fontWeight: 400 }]}>{data.time}</Text>
+        <Text style={[GlobalStyles.subHeadingLogin16, { fontSize: 14, color: 'black', fontWeight: 400 }]}>{data.time}</Text>
       </View>
     </TouchableOpacity>
   )
@@ -36,11 +38,13 @@ const ListCard = ({ data, setShowEvent, setEvent }: any) => {
 const Page = () => {
 
   const [showEvent, setShowEvent] = useState(false)
+  const [showScanner, setShowScanner] = useRecoilState(selectShowScanner);
   const [event, setEvent] = useState({})
-  console.log("================Event",JSON.stringify(event,null,4))
+
   return (
     <GestureHandlerRootView>
       <SafeAreaView />
+      <IntroPopup />
       <View style={styles.header}>
         <Stack.Screen
           options={{
@@ -90,24 +94,24 @@ const Page = () => {
             <View style={styles.topBar}>
               <View style={styles.topBarContent}>
 
-                <Entypo onPress={()=>setShowEvent(false)} name="chevron-small-left" size={24} color="white" />
+                <Entypo onPress={() => setShowEvent(false)} name="chevron-small-left" size={24} color="white" />
               </View>
-              <View style={[styles.topBarContent,{justifyContent:'center'}]}>
+              <View style={[styles.topBarContent, { justifyContent: 'center' }]}>
                 <Text style={[GlobalStyles.subHeadingLogin16, { color: '#fff' }]}>
                   Event
                 </Text>
               </View>
-              <View style={[styles.topBarContent,{
+              <View style={[styles.topBarContent, {
                 // borderWidth: 1,
                 // borderColor: '#fff',
-                height:40,
+                height: 40,
               }]}>
                 <More
-                style={{
-                  position:'absolute',
-                  left:'82%',
-                  top:15,
-                }}
+                  style={{
+                    position: 'absolute',
+                    left: '82%',
+                    top: 15,
+                  }}
                 />
               </View>
             </View>
@@ -117,36 +121,97 @@ const Page = () => {
             />
           </View>
           <BottomSheet backgroundStyle={styles.bottomSheet} snapPoints={[screenHeight * 0.7, screenHeight * 0.82]}>
-            <BottomSheetView style={styles.contentArea}>
+          <View style={{
+            height:'85%'
+          }}>
+            <BottomSheetScrollView style={styles.contentArea}>
               <View style={[styles.heading, { paddingHorizontal: 10, paddingTop: 10, }]}>
-                <Text style={[GlobalStyles.heading, { fontSize: 26,paddingBottom:5}]}>
+                <Text style={[GlobalStyles.heading, { fontSize: 26, paddingBottom: 5 }]}>
                   {event.title}
                 </Text>
-                <Text style={[GlobalStyles.subHeadingLogin16, { fontWeight:400,color:Colors.fontPrimary,paddingBottom:10}]}>
+                <Text style={[GlobalStyles.subHeadingLogin16, { fontWeight: 400, color: Colors.fontPrimary, paddingBottom: 10 }]}>
                   by {event.organiser}
                 </Text>
                 <View>
+                  
                   <View style={{
-                    flexDirection:'row',
-                    alignItems:'center',
-                    gap:20,
-                    paddingVertical:10,
+                    flexDirection: 'row',
+
+                    gap: 20,
+                    paddingVertical: 10,
+                  }}>
+                    <Calender />
+                    <View>
+                      <Text style={[GlobalStyles.subHeadingLogin16, { fontWeight: 500, color: Colors.fontPrimary, lineHeight: 24, }]}>
+                        {event.day}
+                      </Text>
+                      <Text style={[GlobalStyles.CardSubHeading12, { fontWeight: 500, color: Colors.grey, lineHeight: 24, }]}>
+                        {event.time}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={{
+                    flexDirection: 'row',
+
+                    gap: 20,
+                    paddingVertical: 10,
+                  }}>
+                    <Location />
+                    <View>
+                      <Text style={[GlobalStyles.subHeadingLogin16, { fontWeight: 500, color: Colors.fontPrimary, lineHeight: 24, }]}>
+                        {event.location}
+                      </Text>
+                      <Text style={[GlobalStyles.CardSubHeading12, { fontWeight: 500, color: Colors.primaryColor, lineHeight: 24, }]}>
+                        Join to see full address
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={{
+                    flexDirection: 'row',
+
+                    gap: 20,
+                    paddingVertical: 10,
+                  }}>
+                    <Ticket />
+                    <View>
+                      <Text style={[GlobalStyles.subHeadingLogin16, { fontWeight: 500, color: Colors.fontPrimary, lineHeight: 24, }]}>
+                        {event.ticketsLeft}
+                      </Text>
+                      <Text style={[GlobalStyles.CardSubHeading12, { fontWeight: 500, color: Colors.grey, lineHeight: 24, }]}>
+                        {event.invited}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 20,
+                    paddingTop: 10,
+                    paddingBottom:20,
                   }}>
                     <Dollar height={25} width={25} />
-                    <Text style={[GlobalStyles.subHeadingLogin16,{fontWeight:500,color:Colors.fontPrimary,lineHeight:24,}]}>
+                    <Text style={[GlobalStyles.subHeadingLogin16, { fontWeight: 500, color: Colors.fontPrimary, lineHeight: 24, }]}>
                       {event.rate}
                     </Text>
                   </View>
-                <Text style={[GlobalStyles.HeadingSmall18,{fontWeight:600}]}>
-                  About this event
-                </Text>
-                  <Text style={[GlobalStyles.subHeadingLogin16,{fontWeight:400,color:Colors.fontPrimary,lineHeight:24,}]}>
-                  {event.about}
+                  <Text style={[GlobalStyles.HeadingSmall18, { fontWeight: 600 }]}>
+                    About this event
+                  </Text>
+                  <Text style={[GlobalStyles.subHeadingLogin16, { fontWeight: 400, color: Colors.fontPrimary, lineHeight: 24, }]}>
+                    {event.about}
                   </Text>
                 </View>
               </View>
-            </BottomSheetView>
+            </BottomSheetScrollView>
+          </View>
           </BottomSheet>
+          <View style={styles.bottomButtonContainer}> 
+                  <TouchableOpacity style={styles.bottomButton}>
+                      <Text style={[GlobalStyles.subHeadingLogin16, { fontWeight: 600, color: '#fff', lineHeight: 24, }]}>
+                          Buy tickets
+                      </Text>
+                  </TouchableOpacity>
+            </View>
         </GestureHandlerRootView>
       </Modal>
     </GestureHandlerRootView>
@@ -178,21 +243,36 @@ const styles = StyleSheet.create({
   cardLeftText: {
 
   },
+  bottomButtonContainer:{
+    position:'absolute',
+    bottom:0,
+    width:'100%',
+    padding:20,
+    backgroundColor:'#fff'
+  },
+  bottomButton:{
+    width:'100%',
+    flexDirection:'row',
+    borderRadius:100,
+    justifyContent:'center',
+    paddingVertical:10,
+    backgroundColor:Colors.primaryColor
+  },
   topBar: {
     width: screenWidth,
     backgroundColor: 'transparent',
     position: 'absolute',
     zIndex: 6,
-    
+
     flexDirection: 'row',
     justifyContent: 'space-evenly',
   },
-  topBarContent:{
+  topBarContent: {
     // borderWidth: 1,
     // borderColor: '#fff',
-    flexDirection:'row',
-    alignItems:'center',
-    width:'30%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '30%',
   },
   shade: {
     height: '40%',

@@ -15,7 +15,7 @@ const Layout = () => {
         bottom:0,
         height:50,
         marginHorizontal:0,
-        borderRadius:100
+        
       },
       tabBarShowLabel:false,
       tabBarActiveTintColor:Colors.primaryColor,
